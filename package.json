@@ -17,11 +17,12 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "grunt test"
+		"lint": "jshint tasks --config .jshintrc || true",
+    "test": "npm run lint && grunt node_version"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
-    "grunt-contrib-jshint": "^1.0.0"
+    "jshint": "^2.9.2"
   },
   "peerDependencies": {
     "grunt": ">=0.4.0"
