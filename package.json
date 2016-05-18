@@ -14,11 +14,11 @@
   "license": "MIT",
   "main": "Gruntfile.js",
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 5"
   },
   "scripts": {
 		"lint": "jshint tasks --config .jshintrc || true",
-    "test": "npm run lint && grunt node_version"
+    "test": "npm run lint && grunt node_version && npm --version && node --version"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
