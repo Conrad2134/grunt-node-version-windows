@@ -1,15 +1,15 @@
 {
-  "name": "grunt-node-version",
+  "name": "grunt-node-version-windows",
   "description": "A grunt task to ensure you are using the node version required by your project's package.json",
-  "version": "1.0.2",
-  "homepage": "https://github.com/jking90/grunt-node-version",
-  "author": "Jimmy King <hello@jimmyking.me> (http://jimmyking.me)",
+  "version": "1.0.0",
+  "homepage": "https://github.com/Conrad2134/grunt-node-version-windows",
+  "author": "Connor Uhlman <connor.uhlman@gmail.com> (http://www.connoruhlman.com)",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jking90/grunt-node-version.git"
+    "url": "git://github.com/Conrad2134/grunt-node-version-windows"
   },
   "bugs": {
-    "url": "https://github.com/jking90/grunt-node-version/issues"
+    "url": "https://github.com/Conrad2134/grunt-node-version-windows/issues"
   },
   "license": "MIT",
   "main": "Gruntfile.js",
