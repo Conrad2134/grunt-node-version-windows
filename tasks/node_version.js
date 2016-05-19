@@ -11,7 +11,6 @@
 
 var semver = require("semver"),
 	prompt = require("prompt"),
-	stripColorCodes = require("stripcolorcodes"),
 	childProcess = require("child_process"),
 	chalk = require("chalk"),
 	nvm = require("../src/nvm");
@@ -20,50 +19,22 @@ module.exports = function (grunt) {
 	grunt.registerTask("node_version", "A grunt task to ensure you are using the node version required by your project's package.json", function() {
 		var expected = semver.validRange(grunt.file.readJSON("package.json").engines.node),
 			actual = semver.valid(process.version),
-			result = semver.satisfies(actual, expected),
+			satisfies = semver.satisfies(actual, expected),
 			done = this.async(),
-			home = process.env.NVM_HOME,
-			locals = [],
-			remotes = [],
 			bestMatch = "",
 			nvmUse = "",
-			nvmPath = home + "/nvm.exe",
 			options = this.options({
 				alwaysInstall: false,
 				errorLevel: "fatal",
 				globals: [],
-				maxBuffer: 200*1024,
 				nvm: true,
 				override: "",
 				debug: true
 			}),
-			nvmInit = nvmPath + " && ",
 			cmdOpts = {
 				cwd: process.cwd(),
-				env: process.env,
-				maxBuffer: options.maxBuffer
+				env: process.env
 			};
-
-		// If debug not enabled,
-		// remove additional logging capabilities.
-		if (!debug) {
-			debug = function() {}
-		}
-
-		// Apply override if specified
-		if (options.override) {
-			expected = semver.validRange(options.override);
-		}
-
-		// Validate options
-		if (options.errorLevel !== "warn" && options.errorLevel !== "fatal") {
-			grunt.fail.warn("Expected node_version.options.errorLevel to be 'warn' or 'fatal', but found " + options.errorLevel);
-		}
-
-		// Check for engine version in package.json
-		if (!expected) {
-			grunt.fail.warn("You must define a node verision in your project's `package.json` file.\nhttps://npmjs.org/doc/json.html#engines");
-		}
 
 		var printVersion = function(using) {
 			grunt.log.writeln("Switched from node v" + actual + " to " + using);
@@ -134,8 +105,9 @@ module.exports = function (grunt) {
 
 		// Install latest compatible node version
 		var nvmInstall = function() {
-			nvmLs("remote", function() {
-				bestMatch = semver.maxSatisfying(remotes, expected);
+			debug("Checking available versions of node...");
+			nvm.getVersions(true).then(function(versions) {
+				bestMatch = semver.maxSatisfying(versions, expected);
 				nvmUse = "nvm use " + bestMatch;
 
 				var command = "nvm install " + bestMatch;
@@ -155,56 +127,32 @@ module.exports = function (grunt) {
 						}, 2000);
 					});
 				});
-			});
-		};
-
-		// Check for available node versions
-		var nvmLs = function(loc, callback) {
-			var command = "nvm list";
-
-			if (loc === "remote") {
-				command += " available";
-			}
-
-			debug("Running command: " + command);
-			childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
-				var data = stripColorCodes(stdout.toString()).replace(/\s+/g, "|"),
-				available = data.split("|");
-
-				for (var i = 0; i < available.length; i++) {
-					// Trim whitespace
-					available[i] = available[i].replace(/\s/g, "");
-					// Validate
-					var ver = semver.valid(available[i]);
-					if (ver) {
-						if (loc === "remote") {
-							remotes.push(ver);
-						} else if (loc === "local") {
-							locals.push(ver);
-						}
-					}
-				}
-				callback();
+			}, (error) => {
+				console.log(chalk.red("error"));
+				// TODO: handle
 			});
 		};
 
 		// Check for compatible node version
 		var checkVersion = function() {
-			// Make sure a node version is intalled that satisfies
-			// the projects required engine. If not, prompt to install.
-			nvmLs("local", function() {
-				var matches = semver.maxSatisfying(locals, expected);
+			debug("Checking installed versions of node...");
+			nvm.getVersions(false).then((versions) => {
+				var matches = semver.maxSatisfying(versions, expected);
 
 				if (matches) {
 					bestMatch = matches;
-					nvmUse = "nvm use " + bestMatch;
 
-					debug("Running command: " + nvmUse);
-					childProcess.exec(nvmUse, cmdOpts, function(err, stdout, stderr) {
-						printVersion(stdout.split(" ")[3]);
+					debug(`Setting node version to ${bestMatch}`);
+
+					nvm.useVersion(bestMatch).then((setValue) => {
+						printVersion(setValue);
 						setTimeout(function() {
 							checkPackages(options.globals);
-						}, 2000);
+						}, 1500);
+						// TODO: npm takes a second to register when we switch. Fix this?
+					}, (error) => {
+						console.log(chalk.red("error"));
+						// TODO: handle
 					});
 				} else {
 					if (options.alwaysInstall) {
@@ -213,28 +161,73 @@ module.exports = function (grunt) {
 						askInstall();
 					}
 				}
+			}, (error) => {
+				console.log(chalk.red("error"));
+				// TODO: handle
 			});
 		};
 
-		if (result === true) {
-			grunt.log.writeln("Using node " + actual);
-			grunt.log.writeln("(Project requires node " + expected + ")");
-			checkPackages(options.globals);
-		} else {
-			if (!options.nvm) {
-				grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual);
-			} else {
-				debug("Checking if nvm exists...");
-				nvm.checkExists().then(() => {
-					checkVersion();
-				}).catch(() => {
-					grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual + "\nNVM does not appear to be installed.\nPlease install (https://github.com/coreybutler/nvm-windows#installation--upgrades), or update the NVM path.");
-				});
+		// =============================================
+		// EXECUTION START
+		// =============================================
+		setup();
+
+		main();
+		// =============================================
+		// EXECUTION END
+		// =============================================
+
+		/**
+		 * Writes debug information in cyan to the console.
+		 * @param  {String} text Text to write.
+		 */
+		function debug(text) {
+			console.log(chalk.cyan(text));
+		}
+
+		/**
+		 * Validatates options passed in and
+		 * performs other setup tasks.
+		 */
+		function setup() {
+			if (!debug) {
+				debug = function() {}
+			}
+
+			if (options.override) {
+				expected = semver.validRange(options.override);
+			}
+
+			if (options.errorLevel !== "warn" && options.errorLevel !== "fatal") {
+				grunt.fail.warn("Expected node_version.options.errorLevel to be 'warn' or 'fatal', but found " + options.errorLevel);
+			}
+
+			if (!expected) {
+				grunt.fail.warn("You must define a node verision in your project's `package.json` file.\nhttps://npmjs.org/doc/json.html#engines");
 			}
 		}
 
-		function debug(text) {
-			console.log(chalk.cyan(text));
+		/**
+		 * Main execution method.
+		 */
+		function main() {
+			if (satisfies) {
+				grunt.log.writeln("Using node " + actual);
+				grunt.log.writeln("(Project requires node " + expected + ")");
+
+				checkPackages(options.globals);
+			} else {
+				if (!options.nvm) {
+					grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual);
+				} else {
+					debug("Checking if nvm exists...");
+					nvm.checkExists().then(() => {
+						checkVersion();
+					}, (error) => {
+						grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual + "\nNVM does not appear to be installed.\nPlease install (https://github.com/coreybutler/nvm-windows#installation--upgrades), or update the NVM path.");
+					});
+				}
+			}
 		}
 	});
 };
