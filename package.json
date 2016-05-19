@@ -1,43 +1,43 @@
 {
-  "name": "grunt-node-version-windows",
-  "description": "A grunt task to ensure you are using the node version required by your project's package.json",
-  "version": "1.0.0",
-  "homepage": "https://github.com/Conrad2134/grunt-node-version-windows",
-  "author": "Connor Uhlman <connor.uhlman@gmail.com> (http://www.connoruhlman.com)",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/Conrad2134/grunt-node-version-windows"
-  },
-  "bugs": {
-    "url": "https://github.com/Conrad2134/grunt-node-version-windows/issues"
-  },
-  "license": "MIT",
-  "main": "Gruntfile.js",
-  "engines": {
-    "node": ">= 5"
-  },
-  "scripts": {
-    "lint": "jshint tasks --config .jshintrc || true",
-    "test": "npm run lint && grunt node_version && npm --version && node --version"
-  },
-  "devDependencies": {
-    "grunt": "^1.0.1",
-    "jshint": "^2.9.2"
-  },
-  "peerDependencies": {
-    "grunt": ">=0.4.0"
-  },
-  "keywords": [
-    "gruntplugin",
-    "grunt",
-    "nvm",
-    "node",
-    "version",
-    "manager"
-  ],
-  "dependencies": {
-    "prompt": "^1.0.0",
-    "semver": "^5.1.0",
-    "stripcolorcodes": "^0.1.0"
-  }
+	"name": "grunt-node-version-windows",
+	"description": "A grunt task to ensure you are using the node version required by your project's package.json",
+	"version": "1.0.0",
+	"homepage": "https://github.com/Conrad2134/grunt-node-version-windows",
+	"author": "Connor Uhlman <connor.uhlman@gmail.com> (http://www.connoruhlman.com)",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/Conrad2134/grunt-node-version-windows"
+	},
+	"bugs": {
+		"url": "https://github.com/Conrad2134/grunt-node-version-windows/issues"
+	},
+	"license": "MIT",
+	"main": "Gruntfile.js",
+	"engines": {
+		"node": ">= 5"
+	},
+	"scripts": {
+		"lint": "jshint tasks --config .jshintrc || true",
+		"test": "npm run lint"
+	},
+	"devDependencies": {
+		"grunt": "^1.0.1",
+		"jshint": "^2.9.2"
+	},
+	"peerDependencies": {
+		"grunt": ">=0.4.0"
+	},
+	"keywords": [
+		"gruntplugin",
+		"grunt",
+		"nvm",
+		"node",
+		"version",
+		"manager"
+	],
+	"dependencies": {
+		"prompt": "^1.0.0",
+		"semver": "^5.1.0",
+		"stripcolorcodes": "^0.1.0"
+	}
 }

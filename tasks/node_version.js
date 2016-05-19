@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 			bestMatch = "",
 			nvmUse = "",
 			nvmPath = home + "/nvm.exe",
-			options = this.options({
+			options = this.options({ // TODO: rework the options when done.
 				alwaysInstall: false,
 				errorLevel: "fatal",
 				globals: ["jshint"],
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
 		// If debug not enabled,
 		// remove additional logging capabilities.
 		if (!debug) {
-			debug = function() {}
+			debug = function() {};
 		}
 
 		// Apply override if specified
@@ -71,7 +71,7 @@ module.exports = function(grunt) {
 
 		// Check for NVM
 		var checkNVM = function(callback) {
-			var command = nvmPath;
+			var command = nvmPath; // TODO: Don't need path, just call "nvm";
 
 			debug("Running command: " + command);
 			childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
@@ -229,7 +229,7 @@ module.exports = function(grunt) {
 			});
 		};
 
-		if (result === true) {
+		if (result) {
 			grunt.log.writeln("Using node " + actual);
 			grunt.log.writeln("(Project requires node " + expected + ")");
 			checkPackages(options.globals);
