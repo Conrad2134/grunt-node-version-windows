@@ -13,9 +13,10 @@ var semver = require("semver"),
 	prompt = require("prompt"),
 	stripColorCodes = require("stripcolorcodes"),
 	childProcess = require("child_process"),
-	nvm = require("./nvm");
+	chalk = require("chalk"),
+	nvm = require("../src/nvm");
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 	grunt.registerTask("node_version", "A grunt task to ensure you are using the node version required by your project's package.json", function() {
 		var expected = semver.validRange(grunt.file.readJSON("package.json").engines.node),
 			actual = semver.valid(process.version),
@@ -27,10 +28,10 @@ module.exports = function(grunt) {
 			bestMatch = "",
 			nvmUse = "",
 			nvmPath = home + "/nvm.exe",
-			options = this.options({ // TODO: rework the options when done.
+			options = this.options({
 				alwaysInstall: false,
 				errorLevel: "fatal",
-				globals: ["jshint"],
+				globals: [],
 				maxBuffer: 200*1024,
 				nvm: true,
 				override: "",
@@ -46,7 +47,7 @@ module.exports = function(grunt) {
 		// If debug not enabled,
 		// remove additional logging capabilities.
 		if (!debug) {
-			debug = function() {};
+			debug = function() {}
 		}
 
 		// Apply override if specified
@@ -67,20 +68,6 @@ module.exports = function(grunt) {
 		var printVersion = function(using) {
 			grunt.log.writeln("Switched from node v" + actual + " to " + using);
 			grunt.log.writeln("(Project requires node " + expected + ")");
-		};
-
-		// Check for NVM
-		var checkNVM = function(callback) {
-			var command = nvmPath; // TODO: Don't need path, just call "nvm";
-
-			debug("Running command: " + command);
-			childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
-				if (stderr.indexOf("No such file or directory") !== -1) {
-					grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual + "\nNVM does not appear to be installed.\nPlease install (https://github.com/coreybutler/nvm-windows#installation--upgrades), or update the NVM path.");
-				} else {
-					callback();
-				}
-			});
 		};
 
 		// Check for globally required packages
@@ -229,7 +216,7 @@ module.exports = function(grunt) {
 			});
 		};
 
-		if (result) {
+		if (result === true) {
 			grunt.log.writeln("Using node " + actual);
 			grunt.log.writeln("(Project requires node " + expected + ")");
 			checkPackages(options.globals);
@@ -237,12 +224,17 @@ module.exports = function(grunt) {
 			if (!options.nvm) {
 				grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual);
 			} else {
-				checkNVM(checkVersion);
+				debug("Checking if nvm exists...");
+				nvm.checkExists().then(() => {
+					checkVersion();
+				}).catch(() => {
+					grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual + "\nNVM does not appear to be installed.\nPlease install (https://github.com/coreybutler/nvm-windows#installation--upgrades), or update the NVM path.");
+				});
 			}
 		}
 
 		function debug(text) {
-			grunt.log.writeln(text.cyan);
+			console.log(chalk.cyan(text));
 		}
 	});
 };

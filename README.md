@@ -4,4 +4,6 @@
 
 #### More info will be available here once the package is released....
 
+Requires node >=0.12.14
+
 *Forked from [grunt-node-version](https://github.com/jking90/grunt-node-version) by Jimmy King*
