@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 			nvmUse = "",
 			nvmPath = home + "/nvm.exe",
 			options = this.options({ // TODO: rework the options when done.
-				alwaysInstall: true,
+				alwaysInstall: false,
 				errorLevel: "fatal",
 				globals: ["jshint"],
 				maxBuffer: 200*1024,
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
 		// If debug not enabled,
 		// remove additional logging capabilities.
 		if (!debug) {
-			debug = function() {}
+			debug = function() {};
 		}
 
 		// Apply override if specified

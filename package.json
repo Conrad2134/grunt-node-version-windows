@@ -18,7 +18,7 @@
   },
   "scripts": {
 		"lint": "jshint tasks --config .jshintrc || true",
-    "test": "npm run lint && grunt node_version && npm --version && node --version"
+    "test": "npm run lint"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
