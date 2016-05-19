@@ -17,11 +17,11 @@
     "node": ">= 5"
   },
   "scripts": {
-		"lint": "jshint tasks --config .jshintrc || true",
+    "lint": "jshint tasks --config .jshintrc || true",
     "test": "npm run lint && grunt node_version && npm --version && node --version"
   },
   "devDependencies": {
-    "grunt": "^0.4.5",
+    "grunt": "^1.0.1",
     "jshint": "^2.9.2"
   },
   "peerDependencies": {
