@@ -13,7 +13,8 @@ var semver = require("semver"),
 	prompt = require("prompt"),
 	childProcess = require("child_process"),
 	chalk = require("chalk"),
-	nvm = require("../src/nvm");
+	nvm = require("../src/nvm"),
+	npm = require("../src/npm");
 
 module.exports = function (grunt) {
 	grunt.registerTask("node_version", "A grunt task to ensure you are using the node version required by your project's package.json", function() {
@@ -21,12 +22,10 @@ module.exports = function (grunt) {
 			actual = semver.valid(process.version),
 			satisfies = semver.satisfies(actual, expected),
 			done = this.async(),
-			bestMatch = "",
-			nvmUse = "",
 			options = this.options({
 				alwaysInstall: false,
 				errorLevel: "fatal",
-				globals: [],
+				globals: ["jshint"],
 				nvm: true,
 				override: "",
 				debug: true
@@ -36,52 +35,53 @@ module.exports = function (grunt) {
 				env: process.env
 			};
 
-		var printVersion = function(using) {
+// =============================================
+// EXECUTION START
+// =============================================
+		setup();
+
+		main();
+// =============================================
+// EXECUTION END
+// =============================================
+
+		function printVersion(using) {
 			grunt.log.writeln("Switched from node v" + actual + " to " + using);
 			grunt.log.writeln("(Project requires node " + expected + ")");
-		};
+		}
 
 		// Check for globally required packages
-		var checkPackages = function (packages) {
+		function checkPackages(packages) {
 			var thisPackage;
 
 			if (packages.length) {
 				thisPackage = packages.pop();
 
-				var command = "npm ls -g " + thisPackage;
-
-				debug("Running command: " + command);
-				childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
-					//if (err) { throw err ; } // TODO: Npm throws exit 1 on this, fix.
-
-					if (stdout.indexOf("(empty)") !== -1) {
-						npmInstall(thisPackage, function() {
-							checkPackages(packages);
-						});
-					} else {
+				debug(`Checking if ${thisPackage} is installed`);
+				npm.checkInstalled(thisPackage).then((isInstalled) => {
+					if (isInstalled) {
 						checkPackages(packages);
+					} else {
+						debug(`Installing ${thisPackage}`);
+						npm.installPackage(thisPackage).then((installed) => {
+							grunt.log.oklns(`Installed ${installed}`);
+							checkPackages(packages);
+						}, (error) => {
+							console.log(chalk.red("error"));
+							// TODO: handle
+						});
 					}
+				}, (error) => {
+					console.log(chalk.red("error"));
+					// TODO: handle
 				});
 			} else {
 				done();
 			}
-		};
-
-		// Install missing packages
-		var npmInstall = function(thisPackage, callback) {
-			var command = "npm install -g " + thisPackage;
-
-			debug("Running command: " + command);
-			childProcess.exec(command, cmdOpts,function(err, stdout, stderr) {
-				if (err) { throw err ;}
-
-				grunt.log.oklns("Installed " + thisPackage);
-				callback();
-			});
-		};
+		}
 
 		// Prompt to install
-		var askInstall = function() {
+		function askInstall() {
 			prompt.start();
 
 			var prop = {
@@ -101,52 +101,53 @@ module.exports = function (grunt) {
 					grunt[options.errorLevel]("Expected node v" + expected + ", but found " + actual);
 				}
 			});
-		};
+		}
 
 		// Install latest compatible node version
-		var nvmInstall = function() {
+		function nvmInstall() {
 			debug("Checking available versions of node...");
 			nvm.getVersions(true).then(function(versions) {
-				bestMatch = semver.maxSatisfying(versions, expected);
-				nvmUse = "nvm use " + bestMatch;
+				let bestMatch = semver.maxSatisfying(versions, expected);
 
-				var command = "nvm install " + bestMatch;
+				debug(`Installing node v${bestMatch}`);
+				nvm.installVersion(bestMatch).then((version) => {
+					grunt.log.ok(`Installed node v${bestMatch}`);
 
-				debug("Running command: " + command);
-				childProcess.exec(command, cmdOpts, function(err, stdout, stderr) {
-					if (err) { throw err ;}
-
-					var nodeVersion = stdout.split(" ")[3];
-					grunt.log.ok("Installed node v" + bestMatch);
-					printVersion(nodeVersion);
-
-					debug("Running command: " + nvmUse);
-					childProcess.exec(nvmUse, cmdOpts, function(error, stdoutput, stderror) {
+					debug(`Setting node version to ${bestMatch}`);
+					nvm.useVersion(bestMatch).then((setValue) => {
+						printVersion(setValue);
 						setTimeout(function() {
 							checkPackages(options.globals);
-						}, 2000);
+						}, 1500);
+						// TODO: npm takes a second to register when we switch. Fix this?
+					}, (error) => {
+						console.log(chalk.red("error"));
+						// TODO: handle
 					});
+				}, (error) => {
+					console.log(chalk.red("error"));
+					// TODO: handle
 				});
 			}, (error) => {
 				console.log(chalk.red("error"));
 				// TODO: handle
 			});
-		};
+		}
 
 		// Check for compatible node version
-		var checkVersion = function() {
+		function checkVersion() {
 			debug("Checking installed versions of node...");
 			nvm.getVersions(false).then((versions) => {
 				var matches = semver.maxSatisfying(versions, expected);
 
 				if (matches) {
-					bestMatch = matches;
+					let bestMatch = matches;
 
 					debug(`Setting node version to ${bestMatch}`);
 
 					nvm.useVersion(bestMatch).then((setValue) => {
 						printVersion(setValue);
-						setTimeout(function() {
+						setTimeout(() => {
 							checkPackages(options.globals);
 						}, 1500);
 						// TODO: npm takes a second to register when we switch. Fix this?
@@ -165,17 +166,7 @@ module.exports = function (grunt) {
 				console.log(chalk.red("error"));
 				// TODO: handle
 			});
-		};
-
-		// =============================================
-		// EXECUTION START
-		// =============================================
-		setup();
-
-		main();
-		// =============================================
-		// EXECUTION END
-		// =============================================
+		}
 
 		/**
 		 * Writes debug information in cyan to the console.
@@ -191,7 +182,7 @@ module.exports = function (grunt) {
 		 */
 		function setup() {
 			if (!debug) {
-				debug = function() {}
+				debug = function() {};
 			}
 
 			if (options.override) {

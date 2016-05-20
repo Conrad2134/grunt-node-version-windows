@@ -95,6 +95,24 @@ class nvm {
 			});
 		});
 	}
+
+	/**
+	 * Installs a specific version of node to use in nvm.
+	 * @param  {String} version The version to install.
+	 */
+	installVersion(version) {
+		let command = `nvm install ${version}`;
+
+		return new Promise((resolve, reject) => {
+			childProcess.exec(command, this.commandOptions, (err, stdout, stderr) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(stdout.split(" ")[3]);
+				}
+			});
+		});
+	}
 }
 
 module.exports = new nvm();
