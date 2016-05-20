@@ -11,7 +11,6 @@
 
 var semver = require("semver"),
 	prompt = require("prompt"),
-	childProcess = require("child_process"),
 	chalk = require("chalk"),
 	nvm = require("../src/nvm"),
 	npm = require("../src/npm");
