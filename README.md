@@ -28,17 +28,21 @@ In your project's Gruntfile, add a section named `node_version` to the data obje
 ```js
 grunt.initConfig({
 	node_version: {
-		options: {
-			alwaysInstall: false,
-			errorLevel: "fatal",
-			globals: [],
-			nvm: true,
-			override: ""
-			debug: false
+		project: {
+			options: {
+				alwaysInstall: false,
+				errorLevel: "fatal",
+				globals: [],
+				nvm: true,
+				override: "",
+				debug: false
+			}
 		}
 	}
 })
 ```
+
+*Note that `node_version` is a multiTask, so you'll need to be sure to create at least one target inside of your `node_version` configuration.*
 
 ### Options
 

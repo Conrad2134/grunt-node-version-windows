@@ -12,8 +12,31 @@
 
 module.exports = function(grunt) {
 
-  // Project configuration.
-  grunt.initConfig({});
+  // Project configuration. Testing only.
+  grunt.initConfig({
+		node_version: {
+			project: {
+				options: {
+					alwaysInstall: false,
+					errorLevel: "fatal",
+					globals: [],
+					nvm: true,
+					override: "",
+					debug: false
+				}
+			},
+			latest: {
+				options: {
+					alwaysInstall: false,
+					errorLevel: "fatal",
+					globals: ["jshint"],
+					nvm: true,
+					override: "6.2.0",
+					debug: false
+				}
+			}
+		}
+	});
 
   // Actually load this plugin"s task(s).
   grunt.loadTasks("tasks");

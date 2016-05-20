@@ -17,7 +17,7 @@ var semver = require("semver"),
 	npm = require("../src/npm");
 
 module.exports = function (grunt) {
-	grunt.registerTask("node_version", "A grunt task to ensure you are using the node version required by your project's package.json", function() {
+	grunt.registerMultiTask("node_version", "A grunt task to ensure you are using the node version required by your project's package.json", function() {
 		var expected = semver.validRange(grunt.file.readJSON("package.json").engines.node),
 			actual = semver.valid(process.version),
 			satisfies = semver.satisfies(actual, expected),
@@ -25,10 +25,10 @@ module.exports = function (grunt) {
 			options = this.options({
 				alwaysInstall: false,
 				errorLevel: "fatal",
-				globals: ["jshint"],
+				globals: [],
 				nvm: true,
 				override: "",
-				debug: true
+				debug: false
 			}),
 			cmdOpts = {
 				cwd: process.cwd(),
@@ -67,12 +67,12 @@ module.exports = function (grunt) {
 							grunt.log.oklns(`Installed ${installed}`);
 							checkPackages(packages);
 						}, (error) => {
-							console.log(chalk.red("error"));
+							console.log(chalk.red(error));
 							// TODO: handle
 						});
 					}
 				}, (error) => {
-					console.log(chalk.red("error"));
+					console.log(chalk.red(error));
 					// TODO: handle
 				});
 			} else {
@@ -121,15 +121,15 @@ module.exports = function (grunt) {
 						}, 1500);
 						// TODO: npm takes a second to register when we switch. Fix this?
 					}, (error) => {
-						console.log(chalk.red("error"));
+						console.log(chalk.red(error));
 						// TODO: handle
 					});
 				}, (error) => {
-					console.log(chalk.red("error"));
+					console.log(chalk.red(error));
 					// TODO: handle
 				});
 			}, (error) => {
-				console.log(chalk.red("error"));
+				console.log(chalk.red(error));
 				// TODO: handle
 			});
 		}
@@ -152,7 +152,7 @@ module.exports = function (grunt) {
 						}, 1500);
 						// TODO: npm takes a second to register when we switch. Fix this?
 					}, (error) => {
-						console.log(chalk.red("error"));
+						console.log(chalk.red(error));
 						// TODO: handle
 					});
 				} else {
@@ -163,7 +163,7 @@ module.exports = function (grunt) {
 					}
 				}
 			}, (error) => {
-				console.log(chalk.red("error"));
+				console.log(chalk.red(error));
 				// TODO: handle
 			});
 		}
@@ -187,6 +187,7 @@ module.exports = function (grunt) {
 
 			if (options.override) {
 				expected = semver.validRange(options.override);
+				satisfies = semver.satisfies(actual, expected);
 			}
 
 			if (options.errorLevel !== "warn" && options.errorLevel !== "fatal") {
@@ -194,7 +195,7 @@ module.exports = function (grunt) {
 			}
 
 			if (!expected) {
-				grunt.fail.warn("You must define a node verision in your project's `package.json` file.\nhttps://npmjs.org/doc/json.html#engines");
+				grunt.fail.warn("You must define a node version in your project's `package.json` file.\nhttps://npmjs.org/doc/json.html#engines");
 			}
 		}
 

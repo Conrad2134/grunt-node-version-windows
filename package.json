@@ -14,7 +14,7 @@
   "license": "MIT",
   "main": "Gruntfile.js",
   "engines": {
-		"node": ">= 5.0"
+		"node": ">=0.12.14"
   },
   "scripts": {
     "lint": "jshint tasks --config .jshintrc || true",
