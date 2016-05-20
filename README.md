@@ -16,7 +16,7 @@ npm install grunt-node-version-windows --save-dev
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
-grunt.loadNpmTasks('grunt-node-version-windows');
+grunt.loadNpmTasks("grunt-node-version-windows");
 ```
 
 
@@ -30,10 +30,10 @@ grunt.initConfig({
 	node_version: {
 		options: {
 			alwaysInstall: false,
-			errorLevel: 'fatal',
+			errorLevel: "fatal",
 			globals: [],
 			nvm: true,
-			override: "",
+			override: ""
 			debug: false
 		}
 	}
@@ -50,9 +50,9 @@ A boolean that determines whether to install the latest compatible version of no
 
 #### options.errorLevel
 Type: `String`
-Default value: `'fatal'`
+Default value: `"fatal"`
 
-The level of error given when the wrong node version is being used. Accepted values are `'warn'` and `'fatal'`. Warn can can be overidden with `--force`, fatal cannot.
+The level of error given when the wrong node version is being used. Accepted values are `"warn"` and `"fatal"`. Warn can can be overidden with `--force`, fatal cannot.
 
 #### options.globals
 Type: `Array`
@@ -68,7 +68,7 @@ A boolean that determines whether to attempt to use/install a version of node co
 
 #### options.override
 Type: `String`
-Default value: `''`
+Default value: `""`
 
 If you want to override the version specified in your project's `package.json`, specify the version you want to use instead here. This is primarily intended for testing projects on other versions of node.
 
