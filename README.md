@@ -76,6 +76,4 @@ Default value: `false`
 
 A boolean that turns detailed logging on / off. If set to `true`, a message will be logged to the console each time a new command is executed. This is primarily used for debugging issues and testing.
 
-##### This plugin only works on Windows and with nvm-windows.
-
 *Forked from [grunt-node-version](https://github.com/jking90/grunt-node-version) by Jimmy King.*

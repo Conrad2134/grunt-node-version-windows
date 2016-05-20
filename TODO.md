@@ -3,6 +3,7 @@
 ### Now
 - Refactor (eliminate crazy nesting)
 - Unit testing (of what's possible)
+- Finish all that error handling.
 
 ### Future
 - Mocking of commands for testing (is it possible?)
