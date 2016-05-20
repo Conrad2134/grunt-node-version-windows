@@ -8,3 +8,4 @@
 ### Future
 - Mocking of commands for testing (is it possible?)
 - Are there modules we can use to better interface with npm / nvm-windows?
+- eslint over jshint

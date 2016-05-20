@@ -1,6 +1,7 @@
 # grunt-node-version-windows
 [![Build Status](https://travis-ci.org/Conrad2134/grunt-node-version-windows.svg?branch=master)](https://travis-ci.org/Conrad2134/grunt-node-version-windows)
 [![npm version](https://badge.fury.io/js/grunt-node-version-windows.svg)](https://badge.fury.io/js/grunt-node-version-windows)
+[![Coverage Status](https://coveralls.io/repos/github/Conrad2134/grunt-node-version-windows/badge.svg?branch=master)](https://coveralls.io/github/Conrad2134/grunt-node-version-windows?branch=master)
 
 > A grunt task to ensure you are using the node version required by your project's package.json
 

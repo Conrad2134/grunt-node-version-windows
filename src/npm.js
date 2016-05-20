@@ -10,8 +10,9 @@
 
  "use strict";
 
-var childProcess = require("child_process");
-
+var childProcess = require("child_process"),
+	process = require("process");
+	
 /**
  * Provides an interface to npm.
  */
