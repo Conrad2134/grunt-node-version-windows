@@ -1,10 +1,11 @@
 /*
  * grunt-node-version-windows
  *
+ * Copyright (c) 2016 Connor Uhlman
+ * Licensed under the MIT license.
+ *
  * Fork of grunt-node-version
  * https://github.com/jking90/grunt-node-version
- * Copyright (c) 2013 Jimmy King
- * Licensed under the MIT license.
  */
 
  "use strict";
