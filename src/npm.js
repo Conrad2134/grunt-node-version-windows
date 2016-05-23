@@ -28,7 +28,7 @@ class npm {
 	 * @param  {String} packageName The package to check for.
 	 */
 	checkInstalled(packageName) {
-		let command = `npm ls -g ${packageName}`;
+		let command = "npm ls -g " + packageName;
 
 		return new Promise((resolve, reject) => {
 			childProcess.exec(command, this.commandOptions, (err, stdout, stderr) => {
@@ -44,7 +44,7 @@ class npm {
 	 * @param  {String} packageName The package to install.
 	 */
 	installPackage(packageName) {
-		let command = `npm install -g ${packageName}`;
+		let command = "npm install -g " + packageName;
 
 		return new Promise((resolve, reject) => {
 			childProcess.exec(command, this.commandOptions, (err, stdout, stderr) => {

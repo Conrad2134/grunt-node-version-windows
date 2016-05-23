@@ -57,14 +57,14 @@ module.exports = function (grunt) {
 			if (packages.length) {
 				thisPackage = packages.pop();
 
-				debug(`Checking if ${thisPackage} is installed`);
+				debug("Checking if " + thisPackage + " is installed");
 				npm.checkInstalled(thisPackage).then((isInstalled) => {
 					if (isInstalled) {
 						checkPackages(packages);
 					} else {
-						debug(`Installing ${thisPackage}`);
+						debug("Installing " + thisPackage);
 						npm.installPackage(thisPackage).then((installed) => {
-							grunt.log.oklns(`Installed ${installed}`);
+							grunt.log.oklns("Installed " + installed);
 							checkPackages(packages);
 						}, (error) => {
 							console.log(chalk.red(error));
@@ -109,11 +109,11 @@ module.exports = function (grunt) {
 			nvm.getVersions(true).then(function(versions) {
 				let bestMatch = semver.maxSatisfying(versions, expected);
 
-				debug(`Installing node v${bestMatch}`);
+				debug("Installing node v" + bestMatch);
 				nvm.installVersion(bestMatch).then((version) => {
-					grunt.log.ok(`Installed node v${bestMatch}`);
+					grunt.log.ok("Installed node v" + bestMatch);
 
-					debug(`Setting node version to ${bestMatch}`);
+					debug("Setting node version to " + bestMatch);
 					nvm.useVersion(bestMatch).then((setValue) => {
 						printVersion(setValue);
 						setTimeout(function() {
@@ -143,7 +143,7 @@ module.exports = function (grunt) {
 				if (matches) {
 					let bestMatch = matches;
 
-					debug(`Setting node version to ${bestMatch}`);
+					debug("Setting node version to " + bestMatch);
 
 					nvm.useVersion(bestMatch).then((setValue) => {
 						printVersion(setValue);

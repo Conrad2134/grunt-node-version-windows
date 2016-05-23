@@ -84,7 +84,7 @@ class nvm {
 	 * @param  {String} version The version number to use.
 	 */
 	useVersion(version) {
-		let command = `nvm use ${version}`;
+		let command = "nvm use " + version;
 
 		return new Promise((resolve, reject) => {
 			childProcess.exec(command, this.commandOptions, (err, stdout, stderr) => {
@@ -102,7 +102,7 @@ class nvm {
 	 * @param  {String} version The version to install.
 	 */
 	installVersion(version) {
-		let command = `nvm install ${version}`;
+		let command = "nvm install " + version;
 
 		return new Promise((resolve, reject) => {
 			childProcess.exec(command, this.commandOptions, (err, stdout, stderr) => {
