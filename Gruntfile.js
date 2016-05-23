@@ -17,8 +17,22 @@ module.exports = function(grunt) {
 		node_version: {
 			project: {
 				options: {
-					debug: true,
-					override: ">=6.2.0"
+					alwaysInstall: false,
+					errorLevel: "fatal",
+					globals: [],
+					nvm: true,
+					override: "",
+					debug: false
+				}
+			},
+			latest: {
+				options: {
+					alwaysInstall: false,
+					errorLevel: "fatal",
+					globals: ["jshint"],
+					nvm: true,
+					override: "6.2.0",
+					debug: false
 				}
 			}
 		}
@@ -26,9 +40,7 @@ module.exports = function(grunt) {
 
   // Actually load this plugin"s task(s).
   grunt.loadTasks("tasks");
-	// Load the tasks for developing this plugin.
-	grunt.loadTasks("grunt");
 
-	grunt.registerTask("test", ["browserify", "qunit", "coveralls"]);
-  grunt.registerTask("default", []);
+  // By default, lint and run the task.
+  grunt.registerTask("default", ["node_version"]);
 };

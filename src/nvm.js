@@ -12,8 +12,7 @@
 
 var childProcess = require("child_process"),
 	semver = require("semver"),
-	stripColorCodes = require("stripcolorcodes"),
-	process = require("process");
+	stripColorCodes = require("stripcolorcodes");
 
 /**
  * Provides an interface to nvm-windows.
