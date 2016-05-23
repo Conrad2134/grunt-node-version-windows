@@ -37,6 +37,7 @@
   ],
   "dependencies": {
     "chalk": "^1.1.3",
+    "promise": "^7.1.1",
     "prompt": "^1.0.0",
     "semver": "^5.1.0",
     "stripcolorcodes": "^0.1.0"

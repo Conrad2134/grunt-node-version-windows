@@ -13,6 +13,7 @@
 var semver = require("semver"),
 	prompt = require("prompt"),
 	chalk = require("chalk"),
+	Promise = require("promise"),
 	nvm = require("../src/nvm"),
 	npm = require("../src/npm");
 
@@ -58,20 +59,20 @@ module.exports = function (grunt) {
 				thisPackage = packages.pop();
 
 				debug("Checking if " + thisPackage + " is installed");
-				npm.checkInstalled(thisPackage).then((isInstalled) => {
+				npm.checkInstalled(thisPackage).then(function(isInstalled) {
 					if (isInstalled) {
 						checkPackages(packages);
 					} else {
 						debug("Installing " + thisPackage);
-						npm.installPackage(thisPackage).then((installed) => {
+						npm.installPackage(thisPackage).then(function(installed) {
 							grunt.log.oklns("Installed " + installed);
 							checkPackages(packages);
-						}, (error) => {
+						}, function(error) {
 							console.log(chalk.red(error));
 							// TODO: handle
 						});
 					}
-				}, (error) => {
+				}, function(error) {
 					console.log(chalk.red(error));
 					// TODO: handle
 				});
@@ -107,28 +108,28 @@ module.exports = function (grunt) {
 		function nvmInstall() {
 			debug("Checking available versions of node...");
 			nvm.getVersions(true).then(function(versions) {
-				let bestMatch = semver.maxSatisfying(versions, expected);
+				var bestMatch = semver.maxSatisfying(versions, expected);
 
 				debug("Installing node v" + bestMatch);
-				nvm.installVersion(bestMatch).then((version) => {
+				nvm.installVersion(bestMatch).then(function(version) {
 					grunt.log.ok("Installed node v" + bestMatch);
 
 					debug("Setting node version to " + bestMatch);
-					nvm.useVersion(bestMatch).then((setValue) => {
+					nvm.useVersion(bestMatch).then(function(setValue) {
 						printVersion(setValue);
 						setTimeout(function() {
 							checkPackages(options.globals);
 						}, 1500);
 						// TODO: npm takes a second to register when we switch. Fix this?
-					}, (error) => {
+					}, function(error) {
 						console.log(chalk.red(error));
 						// TODO: handle
 					});
-				}, (error) => {
+				}, function(error) {
 					console.log(chalk.red(error));
 					// TODO: handle
 				});
-			}, (error) => {
+			}, function(error) {
 				console.log(chalk.red(error));
 				// TODO: handle
 			});
@@ -137,21 +138,21 @@ module.exports = function (grunt) {
 		// Check for compatible node version
 		function checkVersion() {
 			debug("Checking installed versions of node...");
-			nvm.getVersions(false).then((versions) => {
+			nvm.getVersions(false).then(function(versions) {
 				var matches = semver.maxSatisfying(versions, expected);
 
 				if (matches) {
-					let bestMatch = matches;
+					var bestMatch = matches;
 
 					debug("Setting node version to " + bestMatch);
 
-					nvm.useVersion(bestMatch).then((setValue) => {
+					nvm.useVersion(bestMatch).then(function(setValue) {
 						printVersion(setValue);
-						setTimeout(() => {
+						setTimeout(function() {
 							checkPackages(options.globals);
 						}, 1500);
 						// TODO: npm takes a second to register when we switch. Fix this?
-					}, (error) => {
+					}, function(error) {
 						console.log(chalk.red(error));
 						// TODO: handle
 					});
@@ -162,7 +163,7 @@ module.exports = function (grunt) {
 						askInstall();
 					}
 				}
-			}, (error) => {
+			}, function(error) {
 				console.log(chalk.red(error));
 				// TODO: handle
 			});
@@ -213,9 +214,9 @@ module.exports = function (grunt) {
 					grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual);
 				} else {
 					debug("Checking if nvm exists...");
-					nvm.checkExists().then(() => {
+					nvm.checkExists().then(function() {
 						checkVersion();
-					}, (error) => {
+					}, function(error) {
 						grunt[options.errorLevel]("Expected node " + expected + ", but found v" + actual + "\nNVM does not appear to be installed.\nPlease install (https://github.com/coreybutler/nvm-windows#installation--upgrades), or update the NVM path.");
 					});
 				}
