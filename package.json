@@ -1,7 +1,7 @@
 {
   "name": "grunt-node-version-windows",
   "description": "A grunt task to ensure you are using the node version required by your project's package.json",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/Conrad2134/grunt-node-version-windows",
   "author": "Connor Uhlman <connor.uhlman@gmail.com> (http://www.connoruhlman.com)",
   "repository": {
